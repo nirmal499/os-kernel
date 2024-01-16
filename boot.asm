@@ -11,8 +11,33 @@ start:
 	mov sp, 0x7c00
 	sti		; Enables interrupts
 
-	mov si, message
+	; AH = 02h
+	; AL = number of sectors to read (must be nonzero)
+	; CH = low eight bits of cylinder number
+	; CL = sector number 1-63 (bits 0-5)
+	; DH = head number
+	; DL = drive number (bit 7 set for hard disk)
+	; ES:BX -> data buffer
+
+	mov ah, 2	; READ SECTOR COMMAND
+	mov al, 1	; ONE SECTOR TO READ
+	mov ch, 0	; CYLINDER LOW EIGHT BITS
+	mov cl, 2	; READ SECTOR TWO
+	mov dh, 0	; HEAD NUMBER
+	mov bx, buffer
+	int 0x13	; INVOKE THE INTERRUPT
+
+	jc error
+
+	mov si, buffer
 	call print
+
+	jmp $
+
+error:
+	mov si, error_message
+	call print
+	
 	jmp $
 
 print:
@@ -31,7 +56,9 @@ print_char:
 	int 0x10
 	ret
 
-message: db 'Hello World!', 0
+error_message: db "Failed to load sector", 0
 
 times 510-($ - $$) db 0
 dw 0xAA55
+
+buffer:
