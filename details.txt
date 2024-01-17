@@ -1,2 +1,14 @@
 $ nasm -f bin boot.asm -o boot.bin
 $ qemu-system-x86_64 -hda boot.bin
+
+####################################################################################################
+
+In GDB:
+
+target remote | qemu-system-x86_64 -hda ./boot.bin -S -gdb stdio
+c
+Ctrl + C
+layout asm
+info registers :- Press ENTER to keep looking further
+
+####################################################################################################
