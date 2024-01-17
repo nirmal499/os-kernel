@@ -67,6 +67,14 @@ load32:
 	mov ebp, 0x00200000			; ebp is 32-bit register. In hex each digit takes 4 bits
 	mov esp, ebp
 
+	; ENABLE  THE A20 LINE
+	; We use the processor bus to communicate with Hardware connected to the motherboard
+	; "in" instruction reads from the processor bus
+	in al, 0x92					; Read from the port 0x92
+	or al, 2
+	out 0x92, al				; Write to the port 0x92
+	; "out" instruction reads from the processor bus
+
 	jmp $
 
 print:
